@@ -1,19 +1,14 @@
-import {Card, Flex, IconButton, Text} from "@radix-ui/themes";
+import {Card, Flex, IconButton, Link, Popover, Text} from "@radix-ui/themes";
 import IconResolver from "@/utils/IconResolver";
 import byteSize from "byte-size";
 import DeleteDialog from "@/components/DeleteDialog";
 import {Folder} from "lucide-react";
 import {Link2Icon} from "@radix-ui/react-icons";
 import styles from "./DirectoryItem.module.css"
-import {toast, Toaster} from "sonner";
+import {Toaster} from "sonner";
 
 const DirectoryItem = ({item}: { item: DirectoryItem }) => {
     const fileUrl = `https://${process.env.NEXT_PUBLIC_CDN_URL}/${item.name}`
-    const copyDownloadUrl = () => {
-        navigator.clipboard.writeText(fileUrl)
-            .then(() => toast.message("Download link copied"))
-    }
-
 
     return (
         <Card key={item.name} className={styles.hoverCard}>
@@ -28,9 +23,19 @@ const DirectoryItem = ({item}: { item: DirectoryItem }) => {
                         {byteSize(item.size).value}
                         {byteSize(item.size).unit}
                     </Text>
-                    <IconButton variant={"outline"} className={styles.icon} onClick={() => copyDownloadUrl()}>
-                        <Link2Icon/>
-                    </IconButton>
+                    <Popover.Root>
+                        <Popover.Trigger>
+                            <IconButton variant={"outline"} className={styles.icon}>
+                                <Link2Icon/>
+                            </IconButton>
+                        </Popover.Trigger>
+
+                        <Popover.Content style={{maxWidth: 300 }}>
+                            <Link>
+                                <a href={fileUrl}>{item.name}</a>
+                            </Link>
+                        </Popover.Content>
+                    </Popover.Root>
                 </Flex>
                 <DeleteDialog fileName={item.name}/>
             </Flex>
